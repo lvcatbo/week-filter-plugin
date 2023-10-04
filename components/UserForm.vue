@@ -123,14 +123,14 @@ const getDays = (type: WeekType) => {
   return { monday, sunday, view_name }
 }
 
-const off = bitable.base.onSelectionChange(async (event) => {
-  if (event.data.viewId === selection.value?.viewId) return;
-  else if (event.data.tableId != selection.value?.tableId) {
-    selection.value = {...event.data};
+const off = bitable.base.onSelectionChange(async ({data}) => {
+  if (data.tableId !== selection.value?.tableId) {
+    selection.value = {...data};
     await initFieldOption();
   }
-  else selection.value = {...event.data};
-
+  else if (data.viewId !== selection.value?.viewId) {
+    selection.value.viewId = data.viewId;
+  }
 });
 
 const minWidth = ref('300px');
