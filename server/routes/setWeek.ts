@@ -3,7 +3,14 @@ import {IView} from '@/types/types'
 export default defineEventHandler(async (event) => {
 	const query = getQuery(event)
 	const body: QueryData = await readBody(event);
-	let props = body.viewInfo.property;
+	let props = body.viewInfo.property || {};
+	if (!props?.filter_info) {
+		props.filter_info = {
+			conjunction: 'and',
+			conditions: [],
+		}
+	}
+	props.filter_info.conditions = props.filter_info.conditions.filter(item => item.field_id != body.field_id) || [];
 	props.filter_info.conditions.push(
 		{
 			field_id: body.field_id,

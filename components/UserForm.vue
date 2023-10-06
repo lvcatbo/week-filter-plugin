@@ -50,7 +50,8 @@ const handleFilter = async (type: TimeType) => {
   }
   const { monday, sunday, view_name } = getDays(type);
   if (form.value.showInNew) {
-    await createView(view_name);
+    let creatResult = await createView(view_name);
+    newViewId.value = creatResult?.value?.data?.view?.view_id || '';
   } else {
     newViewId.value = selection.value.viewId!;
   }
@@ -87,10 +88,9 @@ const createView = async (view_name: string) => {
       },
     });
     if (data.value?.code !== 0) {
-      newViewId.value = "";
       console.error(t("errors.createViewFailed") + data.value?.msg);
     }
-    newViewId.value = data.value?.data?.view?.view_id || "";
+    return data;
   } catch (error) {
     console.log(t("errors.createViewFailed"), error);
   }
@@ -139,7 +139,7 @@ const getDays = (type: TimeType) => {
     monday = dayjs().weekday(7).valueOf();
     sunday = dayjs().weekday(13).valueOf();
     view_name = t("weekNames.nextWeek");
-  } else if (type === weekOptions.lastWeek.value) {
+  } else if (type === weekOptions.thisWeek.value) {
     monday = dayjs().weekday(0).valueOf();
     sunday = dayjs().weekday(6).valueOf();
     view_name = t("weekNames.thisWeek");

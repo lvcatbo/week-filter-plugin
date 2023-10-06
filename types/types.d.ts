@@ -20,7 +20,7 @@ export interface IView {
 }
 
 interface IViewProperty {
-    filter_info: IFilterInfo,
+    filter_info?: IFilterInfo,
     hidden_fields: string[],
 }
 
@@ -30,8 +30,7 @@ interface IFilterInfo {
         field_id: string,
         value: string,
         field_type?: string,
-        operator: 'is' | 'isNot' | 'contains' | 'doesNotContain' | 
+        operator: 'is' | 'isNot' | 'contains' | 'doesNotContain' |
         'isGreater' | 'isLess' | 'isEmpty' | 'isNotEmpty' | 'isGreaterEqual' | 'isLessEqual',
     }[],
 }
-
