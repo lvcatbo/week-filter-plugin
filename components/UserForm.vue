@@ -26,7 +26,7 @@ const timeFieldList = ref<IFieldMeta[]>([]);
 
 onMounted(async () => {
   selection.value = await bitable.base.getSelection();
-  initFieldOption();
+  await initFieldOption();
 });
 
 const initFieldOption = async () => {
@@ -41,7 +41,7 @@ const form = ref({
   fieldId: "",
   showInNew: false,
 });
-const newViewId = ref<String>("");
+const newViewId = ref<string>("");
 
 const handleFilter = async (type: TimeType) => {
   if (!selection.value) {
@@ -54,9 +54,26 @@ const handleFilter = async (type: TimeType) => {
   } else {
     newViewId.value = selection.value.viewId!;
   }
-  setWeek(monday, sunday);
+  let viewInfo = await getView(newViewId.value);
+  setWeek(monday, sunday, viewInfo);
 };
-
+const getView = async (viewId: string) => {
+  try {
+    const { data } = await useFetch("/getView", {
+      query: {
+        tableId: selection.value?.tableId,
+        viewId: viewId,
+      },
+      method: "get",
+    });
+    if (data.value?.code !== 0) {
+      console.error(t("errors.getViewFailed") + data.value?.msg);
+    }
+    return data.value?.data?.view;
+  } catch (error) {
+    console.log(t("errors.getViewFailed"), error);
+  }
+};
 const createView = async (view_name: string) => {
   try {
     const { data } = await useFetch("/createView", {
@@ -82,6 +99,7 @@ const createView = async (view_name: string) => {
 const setWeek = async (
   monday: number | string,
   sunday: number | string,
+  viewInfo: any
 ) => {
   try {
     const { data } = await useFetch("/setWeek", {
@@ -90,10 +108,11 @@ const setWeek = async (
         tableId: selection.value?.tableId,
       },
       body: {
-        view_id: newViewId.value,
         field_id: form.value.fieldId,
+        viewInfo,
         monday,
         sunday,
+
       },
     });
     if (data.value?.code !== 0) {
