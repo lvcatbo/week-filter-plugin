@@ -11,10 +11,16 @@ export default {
         "nextWeek": "下周",
         "thisWeek": "本周"
     },
+    "monthNames": {
+        "lastMonth": "上月",
+        "nextMonth": "下月",
+        "thisMonth": "本月"
+    },
     "labels": {
         "targetField": "目标字段",
         "displayMode": "显示方式",
-        "filterTime": "筛选时间"
+        "weekFilter": "按周筛选",
+        "monthFilter": "按月筛选",
     },
     "switchTexts": {
         "newView": "新增视图",

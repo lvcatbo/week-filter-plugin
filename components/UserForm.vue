@@ -2,6 +2,8 @@
 import { ref, onMounted } from "vue";
 import dayjs from "dayjs";
 import weekday from "dayjs/plugin/weekday";
+import { weekOptions, monthOptions } from "./utils";
+import { TimeType } from "@/types/types";
 import "dayjs/locale/zh-cn";
 import {
   bitable,
@@ -12,12 +14,11 @@ import {
 } from "@lark-base-open/js-sdk";
 
 const { t, locale } = useI18n();
-bitable.bridge.getLanguage().then(lang => {
-  locale.value = ['zh', 'zh-TW', 'zh-HK'].includes(lang) ? 'zh' : 'en'
-})
+bitable.bridge.getLanguage().then((lang) => {
+  locale.value = ["zh", "zh-TW", "zh-HK"].includes(lang) ? "zh" : "en";
+});
 dayjs.locale("zh-cn");
 dayjs.extend(weekday);
-
 
 const selection = ref<Selection>();
 let cuTableInstance: IWidgetTable | undefined = undefined;
@@ -25,7 +26,7 @@ const timeFieldList = ref<IFieldMeta[]>([]);
 
 onMounted(async () => {
   selection.value = await bitable.base.getSelection();
-  initFieldOption();
+  await initFieldOption();
 });
 
 const initFieldOption = async () => {
@@ -34,33 +35,51 @@ const initFieldOption = async () => {
   timeFieldList.value = allFieldList.filter(
     (item) => item.type === FieldType.DateTime
   );
-}
+};
 
 const form = ref({
   fieldId: "",
   showInNew: false,
 });
-const newViewId = ref<String>("");
+const newViewId = ref<string>("");
 
-const handleFilter = async (type: WeekType) => {
+const handleFilter = async (type: TimeType) => {
   if (!selection.value) {
-    ElMessage.error(t('errors.getTableInfoFailed'));
+    ElMessage.error(t("errors.getTableInfoFailed"));
     return;
   }
   const { monday, sunday, view_name } = getDays(type);
   if (form.value.showInNew) {
-    await createView(view_name);
+    let creatResult = await createView(view_name);
+    newViewId.value = creatResult?.value?.data?.view?.view_id || '';
   } else {
     newViewId.value = selection.value.viewId!;
   }
-  setWeek(monday, sunday, view_name);
+  let viewInfo = await getView(newViewId.value);
+  setWeek(monday, sunday, viewInfo);
 };
-
+const getView = async (viewId: string) => {
+  try {
+    const { data } = await useFetch("/getView", {
+      query: {
+        tableId: selection.value?.tableId,
+        viewId: viewId,
+      },
+      method: "get",
+    });
+    if (data.value?.code !== 0) {
+      console.error(t("errors.getViewFailed") + data.value?.msg);
+    }
+    return data.value?.data?.view;
+  } catch (error) {
+    console.log(t("errors.getViewFailed"), error);
+  }
+};
 const createView = async (view_name: string) => {
   try {
     const { data } = await useFetch("/createView", {
       query: {
-        tableId: selection.value?.tableId
+        tableId: selection.value?.tableId,
       },
       method: "post",
       body: {
@@ -69,84 +88,94 @@ const createView = async (view_name: string) => {
       },
     });
     if (data.value?.code !== 0) {
-      newViewId.value = "";
-      console.error(t('errors.createViewFailed') + data.value?.msg)
+      console.error(t("errors.createViewFailed") + data.value?.msg);
     }
-    newViewId.value = data.value?.data?.view?.view_id || "";
+    return data;
   } catch (error) {
-    console.log(t('errors.createViewFailed'), error);
+    console.log(t("errors.createViewFailed"), error);
   }
 };
 
-const setWeek = async (monday: number | string, sunday: number | string, view_name: string) => {
+const setWeek = async (
+  monday: number | string,
+  sunday: number | string,
+  viewInfo: any
+) => {
   try {
     const { data } = await useFetch("/setWeek", {
       method: "post",
       query: {
-        tableId: selection.value?.tableId
+        tableId: selection.value?.tableId,
       },
       body: {
-        view_id: newViewId.value,
         field_id: form.value.fieldId,
+        viewInfo,
         monday,
         sunday,
+
       },
     });
     if (data.value?.code !== 0) {
-      ElMessage.error(data.value?.msg || t('errors.operationFailed'));
+      ElMessage.error(data.value?.msg || t("errors.operationFailed"));
       return;
     }
-    ElMessage.success(`${t('errors.filteredData')}`);
+    ElMessage.success(`${t("errors.filteredData")}`);
     return data;
   } catch (error) {
     console.log(error);
   }
 };
 
-const getDays = (type: WeekType) => {
+const getDays = (type: TimeType) => {
   let monday: number = 0;
   let sunday: number = 0;
   let view_name = "";
-  if (type === WeekType.last) {
+
+  if (type === weekOptions.lastWeek.value) {
     monday = dayjs().weekday(-7).valueOf();
     sunday = dayjs().weekday(-1).valueOf();
-    view_name = t('weekNames.lastWeek');
-  } else if (type === WeekType.next) {
+    view_name = t("weekNames.lastWeek");
+  } else if (type === weekOptions.nextWeek.value) {
     monday = dayjs().weekday(7).valueOf();
     sunday = dayjs().weekday(13).valueOf();
-    view_name = t('weekNames.nextWeek');
-  } else {
+    view_name = t("weekNames.nextWeek");
+  } else if (type === weekOptions.thisWeek.value) {
     monday = dayjs().weekday(0).valueOf();
     sunday = dayjs().weekday(6).valueOf();
-    view_name = t('weekNames.thisWeek');
+    view_name = t("weekNames.thisWeek");
+  } else if (type === monthOptions.lastMonth.value) {
+    monday = dayjs().subtract(1, "month").startOf("month").valueOf();
+    sunday = dayjs().subtract(1, "month").endOf("month").valueOf();
+    view_name = t("monthNames.lastMonth");
+  } else if (type === monthOptions.nextMonth.value) {
+    monday = dayjs().add(1, "month").startOf("month").valueOf();
+    sunday = dayjs().add(1, "month").endOf("month").valueOf();
+    view_name = t("monthNames.nextMonth");
+  } else if (type === monthOptions.thisMonth.value) {
+    monday = dayjs().startOf("month").valueOf();
+    sunday = dayjs().endOf("month").valueOf();
+    view_name = t("monthNames.thisMonth");
   }
-  return { monday, sunday, view_name }
-}
+  return { monday, sunday, view_name };
+};
 
-const off = bitable.base.onSelectionChange(async ({data}) => {
+const off = bitable.base.onSelectionChange(async ({ data }) => {
   if (data.tableId !== selection.value?.tableId) {
-    selection.value = {...data};
+    selection.value = { ...data };
     await initFieldOption();
-  }
-  else if (data.viewId !== selection.value?.viewId) {
+  } else if (data.viewId !== selection.value?.viewId) {
     selection.value.viewId = data.viewId;
   }
 });
 
-const minWidth = ref('300px');
+const minWidth = ref("300px");
 watchEffect(() => {
-  minWidth.value = (locale.value == 'zh') ? '300px' : '400px'
-})
+  minWidth.value = locale.value == "zh" ? "300px" : "400px";
+});
 
 onUnmounted(() => {
   off();
 });
-
-enum WeekType {
-  last = -1,
-  next = 0,
-  thisweek = 1,
-}
 </script>
 
 <template>
@@ -171,25 +200,28 @@ enum WeekType {
           :inactive-text="$t('switchTexts.currentView')"
         />
       </el-form-item>
-      <el-form-item :label="$t('labels.filterTime')">
+      <el-form-item :label="$t('labels.weekFilter')">
         <div class="btns">
           <el-button
-            type="warning"
+            v-for="item in weekOptions"
+            :key="item.value"
+            :type="item.color"
             :disabled="form.fieldId == ''"
-            @click="handleFilter(WeekType.last)"
-            >{{ $t('weekNames.lastWeek') }}</el-button
+            @click="handleFilter(item.value)"
+            >{{ $t(item.label) }}</el-button
           >
+        </div>
+      </el-form-item>
+
+      <el-form-item :label="$t('labels.monthFilter')">
+        <div class="btns">
           <el-button
-            type="primary"
+            v-for="item in monthOptions"
+            :key="item.value"
+            :type="item.color"
             :disabled="form.fieldId == ''"
-            @click="handleFilter(WeekType.thisweek)"
-            >{{ $t('weekNames.thisWeek') }}</el-button
-          >
-          <el-button
-            type="success"
-            :disabled="form.fieldId == ''"
-            @click="handleFilter(WeekType.next)"
-            >{{ $t('weekNames.nextWeek') }}</el-button
+            @click="handleFilter(item.value)"
+            >{{ $t(item.label) }}</el-button
           >
         </div>
       </el-form-item>
@@ -200,7 +232,7 @@ enum WeekType {
 <style scoped>
 .user-form {
   width: 100%;
-  min-width: v-bind('minWidth');
+  min-width: v-bind("minWidth");
   margin: 0 auto;
 }
 </style>

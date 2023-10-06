@@ -1,39 +1,44 @@
-import {client} from "../util";
-
+import { client } from "../util";
+import {IView} from '@/types/types'
 export default defineEventHandler(async (event) => {
 	const query = getQuery(event)
 	const body: QueryData = await readBody(event);
+	let props = body.viewInfo.property || {};
+	if (!props?.filter_info) {
+		props.filter_info = {
+			conjunction: 'and',
+			conditions: [],
+		}
+	}
+	props.filter_info.conditions = props.filter_info.conditions.filter(item => item.field_id != body.field_id) || [];
+	props.filter_info.conditions.push(
+		{
+			field_id: body.field_id,
+			operator: 'isGreater',
+			value: `[\"ExactDate\",${body.monday}]`,
+		},
+		{
+			field_id: body.field_id,
+			operator: 'isLess',
+			value: `[\"ExactDate\",${body.sunday}]`,
+		},
+	)
+
 	let res = await client.base.appTableView.patch({
 		path: {
 			table_id: query.tableId as string,
-			view_id: body.view_id,
+			view_id: body.viewInfo.view_id,
 		},
 		data: {
-			property: {
-				filter_info: {
-					conjunction: 'and',
-					conditions: [
-						{
-							field_id: body.field_id,
-							operator: 'isGreater',
-							value: `[\"ExactDate\",${body.monday}]`,
-						},
-						{
-							field_id: body.field_id,
-							operator: 'isLess',
-							value: `[\"ExactDate\",${body.sunday}]`,
-						},
-					],
-				},
-			},
+			property: props,
 		},
 	});
 	return res;
 })
 
 interface QueryData {
-	view_id: string,
 	field_id: string,
+	viewInfo: IView,
 	monday: string,
 	sunday: string,
 }

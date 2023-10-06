@@ -11,10 +11,16 @@ export default {
         "nextWeek": "Next",
         "thisWeek": "current"
     },
+    "monthNames": {
+        "lastMonth": "Last",
+        "nextMonth": "Next",
+        "thisMonth": "current"
+    },
     "labels": {
         "targetField": "Target Field",
         "displayMode": "Display Mode",
-        "filterTime": "select week"
+        "weekFilter": "select week",
+        "monthFilter": "select month",
     },
     "switchTexts": {
         "newView": "New View",

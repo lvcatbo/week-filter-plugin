@@ -4,5 +4,11 @@ export default defineNuxtConfig({
   modules: ['@element-plus/nuxt', '@nuxtjs/i18n'],
   i18n: {
     vueI18n: './local/index.ts',
-  }
+  },
+  components: [
+    {
+      path: '~/components/',
+      pathPrefix: false,
+    },
+  ],
 })
