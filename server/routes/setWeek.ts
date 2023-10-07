@@ -1,8 +1,9 @@
-import { client } from "../util";
 import {IView} from '@/types/types'
+import createClient from '../util'
 export default defineEventHandler(async (event) => {
 	const query = getQuery(event)
 	const body: QueryData = await readBody(event);
+	const client = createClient(query.appToken, query.personalToken);
 	let props = body.viewInfo.property || {};
 	if (!props?.filter_info) {
 		props.filter_info = {

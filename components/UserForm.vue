@@ -13,6 +13,7 @@ import {
   IWidgetTable,
 } from "@lark-base-open/js-sdk";
 
+const personalToken = usePersonalBaseToken();
 const { t, locale } = useI18n();
 bitable.bridge.getLanguage().then((lang) => {
   locale.value = ["zh", "zh-TW", "zh-HK"].includes(lang) ? "zh" : "en";
@@ -62,6 +63,8 @@ const getView = async (viewId: string) => {
   try {
     const { data } = await useFetch("/getView", {
       query: {
+        appToken: selection.value?.baseId,
+        personalToken: personalToken.value,
         tableId: selection.value?.tableId,
         viewId: viewId,
       },
@@ -79,6 +82,8 @@ const createView = async (view_name: string) => {
   try {
     const { data } = await useFetch("/createView", {
       query: {
+        appToken: selection.value?.baseId,
+        personalToken: personalToken.value,
         tableId: selection.value?.tableId,
       },
       method: "post",
@@ -105,6 +110,8 @@ const setWeek = async (
     const { data } = await useFetch("/setWeek", {
       method: "post",
       query: {
+        appToken: selection.value?.baseId,
+        personalToken: personalToken.value,
         tableId: selection.value?.tableId,
       },
       body: {

@@ -34,3 +34,10 @@ interface IFilterInfo {
         'isGreater' | 'isLess' | 'isEmpty' | 'isNotEmpty' | 'isGreaterEqual' | 'isLessEqual',
     }[],
 }
+
+interface QueryData{
+    appToken: string,
+    personalToken: string,
+    tableId: string,
+    viewId?: string,
+}
