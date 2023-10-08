@@ -1,8 +1,10 @@
-import { client } from "../util";
+import { QueryData } from "~/types/types";
+import createClient from "../util";
 
 export default defineEventHandler(async (event) => {
-    const body: QueryData = await readBody(event);
-    const query = getQuery(event);
+    const body: BodyData = await readBody(event);
+    const query: QueryData = getQuery(event);
+    const client = createClient(query.appToken, query.personalToken);
     let res = await client.base.appTableView.create({
         data: body,
         path: {
@@ -12,7 +14,7 @@ export default defineEventHandler(async (event) => {
     return res;
 })
 
-interface QueryData {
+interface BodyData {
     view_name: string,
     view_type: 'grid',
 }
