@@ -12,4 +12,7 @@ Please refer to the [usage guidance](https://raotv7asrln.feishu.cn/docx/Rk2xdAHO
 You can learn more in the [Base Extension Development Guide](https://bytedance.feishu.cn/docx/VxhudDXbyo1V7jxAcTbctJQ5nvc) or [多维表格扩展脚本开发指南](https://bytedance.feishu.cn/docx/HazFdSHH9ofRGKx8424cwzLlnZc).
 
 
+## Repository
 
+1. [GitHub](https://github.com/Ncrybo/week-filter-plugin)
+2. [Replit](https://replit.com/@dongbobo2001/week-filter-plugin)
