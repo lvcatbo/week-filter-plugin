@@ -1,6 +1,6 @@
 entrypoint = "index.js"
 
-hidden = [".config", ".nuxt", ".swc"]
+hidden = [".config", ".next", ".swc"]
 
 run = "npm run dev"
 
@@ -76,7 +76,7 @@ support = true
 
 [deployment]
 build = ["npm", "run", "build"]
-run = ["npm", "run", "preview"]
+run = ["npm", "run", "start"]
 deploymentTarget = "cloudrun"
 
 [[ports]]
