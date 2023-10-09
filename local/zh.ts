@@ -4,7 +4,8 @@ export default {
         "getTableInfoFailed": "获取表格信息失败，请重启服务试试",
         "createViewFailed": "创建视图失败",
         "operationFailed": "操作失败",
-        "filteredData": "已为您筛数据"
+        "filteredData": "已为您筛数据",
+        "viewNameExist": "视图名称已存在",
     },
     "weekNames": {
         "lastWeek": "上周",
