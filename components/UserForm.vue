@@ -53,7 +53,13 @@ const handleFilter = async (type: TimeType) => {
   const { monday, sunday, view_name } = getDays(type);
   if (form.value.showInNew) {
     let creatResult = await createView(view_name);
-    newViewId.value = creatResult?.value?.data?.view?.view_id || "";
+    let nvid = creatResult?.value?.data?.view?.view_id;
+    if (!nvid) {
+      loading.value = false;
+      return;
+    }
+    newViewId.value = nvid;
+    
   } else {
     newViewId.value = selection.value.viewId!;
   }
@@ -73,7 +79,13 @@ const getView = async (viewId: string) => {
       method: "get",
     });
     if (data.value?.code !== 0) {
-      console.error(t("errors.getViewFailed") + data.value?.msg);
+      if(data.value?.code === 1011) {
+        ElMessage.error('无效的授权码');
+        localStorage.removeItem("weekPlugn_personalToken");
+        personalToken.value = "";
+        return;
+      }
+      console.error(`${t("errors.getViewFailed")}, ${data.value?.msg}`);
     }
     return data.value?.data?.view;
   } catch (error) {
@@ -95,6 +107,10 @@ const createView = async (view_name: string) => {
       },
     });
     if (data.value?.code !== 0) {
+      if (data.value?.code == 1254020) {
+        ElMessage.error(t("errors.viewNameExist"));
+        return;
+      }
       console.error(t("errors.createViewFailed") + data.value?.msg);
     }
     return data;

@@ -4,7 +4,8 @@ export default {
         "getTableInfoFailed": "Failed to get table information, please try restarting the service",
         "createViewFailed": "Failed to create a view",
         "operationFailed": "Operation failed",
-        "filteredData": "Data has been filtered for you"
+        "filteredData": "Data has been filtered for you",
+        "viewNameExist": "View name already exists",
     },
     "weekNames": {
         "lastWeek": "Last",
