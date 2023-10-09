@@ -43,8 +43,9 @@ const form = ref({
   showInNew: false,
 });
 const newViewId = ref<string>("");
-
+const loading = ref<boolean>(false);
 const handleFilter = async (type: TimeType) => {
+  loading.value = true;
   if (!selection.value) {
     ElMessage.error(t("errors.getTableInfoFailed"));
     return;
@@ -52,12 +53,13 @@ const handleFilter = async (type: TimeType) => {
   const { monday, sunday, view_name } = getDays(type);
   if (form.value.showInNew) {
     let creatResult = await createView(view_name);
-    newViewId.value = creatResult?.value?.data?.view?.view_id || '';
+    newViewId.value = creatResult?.value?.data?.view?.view_id || "";
   } else {
     newViewId.value = selection.value.viewId!;
   }
   let viewInfo = await getView(newViewId.value);
-  setWeek(monday, sunday, viewInfo);
+  await setWeek(monday, sunday, viewInfo);
+  loading.value = false;
 };
 const getView = async (viewId: string) => {
   try {
@@ -119,7 +121,6 @@ const setWeek = async (
         viewInfo,
         monday,
         sunday,
-
       },
     });
     if (data.value?.code !== 0) {
@@ -207,31 +208,33 @@ onUnmounted(() => {
           :inactive-text="$t('switchTexts.currentView')"
         />
       </el-form-item>
-      <el-form-item :label="$t('labels.weekFilter')">
-        <div class="btns">
-          <el-button
-            v-for="item in weekOptions"
-            :key="item.value"
-            :type="item.color"
-            :disabled="form.fieldId == ''"
-            @click="handleFilter(item.value)"
-            >{{ $t(item.label) }}</el-button
-          >
-        </div>
-      </el-form-item>
+      <div class="btn-groups" v-loading="loading" element-loading-text="正在执行，请稍等...">
+        <el-form-item :label="$t('labels.weekFilter')">
+          <div class="btns">
+            <el-button
+              v-for="item in weekOptions"
+              :key="item.value"
+              :type="item.color"
+              :disabled="form.fieldId == ''"
+              @click="handleFilter(item.value)"
+              >{{ $t(item.label) }}</el-button
+            >
+          </div>
+        </el-form-item>
 
-      <el-form-item :label="$t('labels.monthFilter')">
-        <div class="btns">
-          <el-button
-            v-for="item in monthOptions"
-            :key="item.value"
-            :type="item.color"
-            :disabled="form.fieldId == ''"
-            @click="handleFilter(item.value)"
-            >{{ $t(item.label) }}</el-button
-          >
-        </div>
-      </el-form-item>
+        <el-form-item :label="$t('labels.monthFilter')">
+          <div class="btns">
+            <el-button
+              v-for="item in monthOptions"
+              :key="item.value"
+              :type="item.color"
+              :disabled="form.fieldId == ''"
+              @click="handleFilter(item.value)"
+              >{{ $t(item.label) }}</el-button
+            >
+          </div>
+        </el-form-item>
+      </div>
     </el-form>
   </div>
 </template>
