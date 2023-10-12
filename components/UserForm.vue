@@ -80,7 +80,7 @@ const getView = async (viewId: string) => {
     });
     if (data.value?.code !== 0) {
       if(data.value?.code === 1011) {
-        ElMessage.error('无效的授权码');
+        ElMessage.error(t("errors.tokenInvalid"));
         localStorage.removeItem("weekPlugn_personalToken");
         personalToken.value = "";
         return;
@@ -224,7 +224,7 @@ onUnmounted(() => {
           :inactive-text="$t('switchTexts.currentView')"
         />
       </el-form-item>
-      <div class="btn-groups" v-loading="loading" element-loading-text="正在执行，请稍等...">
+      <div class="btn-groups" v-loading="loading" :element-loading-text="$t('tips.handling')">
         <el-form-item :label="$t('labels.weekFilter')">
           <div class="btns">
             <el-button

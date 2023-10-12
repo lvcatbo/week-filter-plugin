@@ -13,25 +13,25 @@ const changeToken = () => {
     <ClientOnly>
       <div class="hasToken" v-if="personalToken != ''">
         <div class="help">
-          <div>此插件提供快捷日期筛选功能，</div>
+          <div>{{ $t('tips.help1') }}</div>
           <div>
-            <span style="white-space: nowrap;">使用说明和建议反馈请查阅</span>
+            <span style="white-space: nowrap;">{{ $t('tips.help2') }}</span>
             <Icon icon="heroicons-solid:arrow-sm-right" color="#00a6ed"/>
             <a
               href="https://raotv7asrln.feishu.cn/docx/Rk2xdAHOio7ctuxzyzQc6x7RnSd?from=from_copylink"
               target="_blank"
             >
-              日期插件使用指南
+            {{ $t('tips.help3') }}
             </a>
           </div>
         </div>
         <div class="top">
           <el-popconfirm
             width="220"
-            confirm-button-text="确定"
-            cancel-button-text="取消"
+            :confirm-button-text="$t('button.confirm')"
+            :cancel-button-text="$t('button.cancel')"
             icon-color="#626AEF"
-            title="确定要更新授权码?"
+            :title="$t('tips.updateKey')"
             :hide-after="0"
             @confirm="changeToken"
           >

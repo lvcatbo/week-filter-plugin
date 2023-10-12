@@ -6,6 +6,7 @@ export default {
         "operationFailed": "操作失败",
         "filteredData": "已为您筛数据",
         "viewNameExist": "视图名称已存在",
+        "tokenInvalid": "无效授权码"
     },
     "weekNames": {
         "lastWeek": "上周",
@@ -26,5 +27,21 @@ export default {
     "switchTexts": {
         "newView": "新增视图",
         "currentView": "当前视图"
+    },
+
+    // 提示信息
+    "tips": {
+        "pleaseInputAuthCode": "请先输入多维表授权码",
+        "handling": "正在处理中，请稍后...",
+        "help1": "此插件提供快捷日期筛选功能，",
+        "help2": "使用说明和建议反馈请查阅",
+        "help3": "日期插件使用指南",
+        "updateKey": "确定要更新授权码"
+    },
+
+    // 按钮文本
+    "button": {
+        "confirm": "确定",
+        "cancel": "取消",
     }
 }

@@ -11,9 +11,9 @@ const confirmToken = () => {
 
 <template>
   <div class="input-token">
-    <span>请先输入多维表授权码：</span>
-    <el-input v-model="inputToken" placeholder="请输入多维表授权码"></el-input>
-    <el-button type="primary" @click="confirmToken">确认</el-button>
+    <span>{{ $t('tips.pleaseInputAuthCode') }}</span>
+    <el-input v-model="inputToken" :placeholder="$t('tips.pleaseInputAuthCode')"></el-input>
+    <el-button type="primary" @click="confirmToken">{{ $t('button.confirm') }}</el-button>
   </div>
 </template>
 
