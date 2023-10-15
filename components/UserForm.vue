@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import dayjs from "dayjs";
-import weekday from "dayjs/plugin/weekday";
 import { weekOptions, monthOptions } from "./utils";
 import { TimeType } from "@/types/types";
 import "dayjs/locale/zh-cn";
@@ -12,14 +11,17 @@ import {
   FieldType,
   IWidgetTable,
 } from "@lark-base-open/js-sdk";
+import type { FormInstance, FormRules } from "element-plus";
+
+const { t, locale } = useI18n();
+const formRef = ref<FormInstance>();
+const rules = ref<FormRules>({
+  fieldId: [
+    { required: true, message: t("errors.fieldIdInvalid"), trigger: "blur" },
+  ],
+});
 
 const personalToken = usePersonalBaseToken();
-const { t, locale } = useI18n();
-bitable.bridge.getLanguage().then((lang) => {
-  locale.value = ["zh", "zh-TW", "zh-HK"].includes(lang) ? "zh" : "en";
-});
-dayjs.locale("zh-cn");
-dayjs.extend(weekday);
 
 const selection = ref<Selection>();
 let cuTableInstance: IWidgetTable | undefined = undefined;
@@ -39,33 +41,56 @@ const initFieldOption = async () => {
 };
 
 const form = ref({
-  fieldId: "",
+  fieldId: undefined,
   showInNew: false,
+  startTime: 0,
+  endTime: 0,
 });
 const newViewId = ref<string>("");
 const loading = ref<boolean>(false);
-const handleFilter = async (type: TimeType) => {
-  loading.value = true;
-  if (!selection.value) {
-    ElMessage.error(t("errors.getTableInfoFailed"));
-    return;
-  }
-  const { monday, sunday, view_name } = getDays(type);
-  if (form.value.showInNew) {
-    let creatResult = await createView(view_name);
-    let nvid = creatResult?.value?.data?.view?.view_id;
-    if (!nvid) {
+const handleFilter = async (
+  type: TimeType,
+  formEl: FormInstance | undefined
+) => {
+  if (!formEl) return;
+  await formEl.validate(async (valid, fields) => {
+    debugger
+    if (valid) {
+      let monday = 0;
+      let sunday = 0;
+      let view_name = "";
+      loading.value = true;
+      if (!selection.value) {
+        ElMessage.error(t("errors.getTableInfoFailed"));
+        return;
+      }
+      if (type === "custom") {
+        monday = form.value.startTime;
+        sunday = form.value.endTime;
+        view_name = "newView";
+        debugger;
+      } else {
+        let res = getDays(type);
+        monday = res.monday;
+        sunday = res.sunday;
+        view_name = res.view_name;
+      }
+      if (form.value.showInNew) {
+        let creatResult = await createView(view_name);
+        let nvid = creatResult?.value?.data?.view?.view_id;
+        if (!nvid) {
+          loading.value = false;
+          return;
+        }
+        newViewId.value = nvid;
+      } else {
+        newViewId.value = selection.value.viewId!;
+      }
+      let viewInfo = await getView(newViewId.value);
+      await setWeek(monday, sunday, viewInfo);
       loading.value = false;
-      return;
     }
-    newViewId.value = nvid;
-    
-  } else {
-    newViewId.value = selection.value.viewId!;
-  }
-  let viewInfo = await getView(newViewId.value);
-  await setWeek(monday, sunday, viewInfo);
-  loading.value = false;
+  });
 };
 const getView = async (viewId: string) => {
   try {
@@ -79,7 +104,7 @@ const getView = async (viewId: string) => {
       method: "get",
     });
     if (data.value?.code !== 0) {
-      if(data.value?.code === 1011) {
+      if (data.value?.code === 1011) {
         ElMessage.error(t("errors.tokenInvalid"));
         localStorage.removeItem("weekPlugn_personalToken");
         personalToken.value = "";
@@ -204,8 +229,8 @@ onUnmounted(() => {
 
 <template>
   <div class="user-form">
-    <el-form v-model="form" label-width="auto">
-      <el-form-item :label="$t('labels.targetField')">
+    <el-form :model="form" label-width="auto" :rules="rules" ref="formRef">
+      <el-form-item :label="$t('labels.targetField')" prop="fieldId">
         <el-select v-model="form.fieldId">
           <el-option
             v-for="item in timeFieldList"
@@ -224,15 +249,18 @@ onUnmounted(() => {
           :inactive-text="$t('switchTexts.currentView')"
         />
       </el-form-item>
-      <div class="btn-groups" v-loading="loading" :element-loading-text="$t('tips.handling')">
+      <div
+        class="btn-groups"
+        v-loading="loading"
+        :element-loading-text="$t('tips.handling')"
+      >
         <el-form-item :label="$t('labels.weekFilter')">
           <div class="btns">
             <el-button
               v-for="item in weekOptions"
               :key="item.value"
               :type="item.color"
-              :disabled="form.fieldId == ''"
-              @click="handleFilter(item.value)"
+              @click="handleFilter(item.value, formRef)"
               >{{ $t(item.label) }}</el-button
             >
           </div>
@@ -244,9 +272,41 @@ onUnmounted(() => {
               v-for="item in monthOptions"
               :key="item.value"
               :type="item.color"
-              :disabled="form.fieldId == ''"
-              @click="handleFilter(item.value)"
+              @click="handleFilter(item.value, formRef)"
               >{{ $t(item.label) }}</el-button
+            >
+          </div>
+        </el-form-item>
+
+        <el-form-item :label="$t('labels.custom')">
+          <div class="daterange">
+            <el-date-picker
+              v-model="form.startTime"
+              type="date"
+              start-placeholder="Start date"
+              end-placeholder="End date"
+              value-format="x"
+              size="small"
+              :popper-options="{
+                placement: 'top',
+              }"
+            />-
+            <el-date-picker
+              v-model="form.endTime"
+              type="date"
+              start-placeholder="Start date"
+              end-placeholder="End date"
+              value-format="x"
+              size="small"
+              :popper-options="{
+                placement: 'top',
+              }"
+            />
+            <el-button
+              size="small"
+              type="primary"
+              @click="handleFilter('custom', formRef)"
+              >{{ $t("button.confirm") }}</el-button
             >
           </div>
         </el-form-item>
@@ -260,5 +320,12 @@ onUnmounted(() => {
   width: 100%;
   min-width: v-bind("minWidth");
   margin: 0 auto;
+  bottom: 10px;
+}
+.daterange {
+  width: 100%;
+  display: flex;
+  gap: 3px;
+  align-items: center;
 }
 </style>
