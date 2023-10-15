@@ -12,7 +12,7 @@ const confirmToken = () => {
 <template>
   <div class="input-token">
     <span>{{ $t('tips.pleaseInputAuthCode') }}</span>
-    <el-input v-model="inputToken" :placeholder="$t('tips.pleaseInputAuthCode')"></el-input>
+    <el-input v-model="inputToken"></el-input>
     <el-button type="primary" @click="confirmToken">{{ $t('button.confirm') }}</el-button>
   </div>
 </template>

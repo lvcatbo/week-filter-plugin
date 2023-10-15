@@ -7,6 +7,7 @@ export default {
         "filteredData": "Data has been filtered for you",
         "viewNameExist": "View name already exists",
         "tokenInvalid": "Token Invalid",
+        "fieldIdInvalid": "Please select the target field first",
     },
     "weekNames": {
         "lastWeek": "Last",
@@ -21,8 +22,9 @@ export default {
     "labels": {
         "targetField": "Target Field",
         "displayMode": "Display Mode",
-        "weekFilter": "select week",
-        "monthFilter": "select month",
+        "weekFilter": "Filter by Week",
+        "monthFilter": "Filter by Month",
+        "custom": "custom",
     },
     "switchTexts": {
         "newView": "New View",
@@ -35,6 +37,7 @@ export default {
         "help1": "This plugin provides a quick date filtering function,",
         "help2": "For instructions and feedback, please refer to",
         "help3": "guide",
+        "help4": "How to get authorization code?",
         "updateKey": "Sure update the authorization code ?"
     },
 

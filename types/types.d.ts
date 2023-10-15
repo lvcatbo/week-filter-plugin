@@ -10,7 +10,7 @@ export enum MonthType {
     thisMonth = 'this_month',
 }
 
-export type TimeType = WeekType | MonthType;
+export type TimeType = WeekType | MonthType | 'custom';
 
 export interface IView {
     view_id: string,
