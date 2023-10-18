@@ -46,5 +46,20 @@ export default {
     "button": {
         "confirm": "确定",
         "cancel": "取消",
+    },
+    "shortcut": {
+        "lastYear": "上年度",
+        "thisYear": "本年度",
+        "nextYear": "下年度",
+        "lastQuarter": "上季度",
+        "thisQuarter": "本季度",
+        "nextQuarter": "下季度",
+        "lastWeek": "上周",
+        "thisWeek": "本周",
+        "nextWeek": "下周",
+        "lastMonth": "上月",
+        "thisMonth": "本月",
+        "nextMonth": "下月",
+        "last3Months": "近3个月",
     }
 }

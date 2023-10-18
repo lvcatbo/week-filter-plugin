@@ -44,6 +44,21 @@ export default {
     "button": {
         "confirm": "Confirm",
         "cancel": "Cancel",
+    },
+    "shortcut": {
+        "lastYear": "Last Year",
+        "thisYear": "This Year",
+        "nextYear": "Next Year",
+        "lastQuarter": "Last Quarter",
+        "thisQuarter": "This Quarter",
+        "nextQuarter": "Next Quarter",
+        "lastWeek": "Last Week",
+        "thisWeek": "This Week",
+        "nextWeek": "Next Week",
+        "lastMonth": "Last Month",
+        "thisMonth": "This Month",
+        "nextMonth": "Next Month",
+        "last3Months": "Last 3 Months",
     }
 
 }
