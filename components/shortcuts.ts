@@ -79,7 +79,7 @@ export default (t: any) => {
       }
     },
     {
-      text: t('shortcut.lastMonth'),
+      text: t('shortcut.last3Months'),
       value: () => {
         const start = dayjs().subtract(3, 'month').startOf('month').toDate();
         const end = dayjs().endOf('month').toDate();
