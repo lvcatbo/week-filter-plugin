@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watchEffect } from "vue";
 import dayjs from "dayjs";
 import { weekOptions, monthOptions } from "./utils";
 import { TimeType } from "@/types/types";
@@ -12,8 +12,15 @@ import {
   IWidgetTable,
 } from "@lark-base-open/js-sdk";
 import type { FormInstance, FormRules } from "element-plus";
+import shortcutsFn from "./shortcuts";
 
 const { t, locale } = useI18n();
+
+const shortcuts = ref();
+watchEffect(() => {
+  shortcuts.value = shortcutsFn(t);
+});
+
 const formRef = ref<FormInstance>();
 const rules = ref<FormRules>({
   fieldId: [
@@ -36,7 +43,7 @@ const initFieldOption = async () => {
   cuTableInstance = await bitable.base.getTableById(selection.value?.tableId!);
   const allFieldList = await cuTableInstance.getFieldMetaList();
   timeFieldList.value = allFieldList.filter(
-    (item) => item.type === FieldType.DateTime
+    (item) => [FieldType.DateTime, FieldType.CreatedTime, FieldType.ModifiedTime].includes(item.type)
   );
 };
 
@@ -46,6 +53,11 @@ const form = ref({
   startTime: 0,
   endTime: 0,
 });
+const dateRange = ref('');
+const handleDateChange = (val: any) => {
+  form.value.startTime = val[0];
+  form.value.endTime = val[1];
+};
 const newViewId = ref<string>("");
 const loading = ref<boolean>(false);
 const handleFilter = async (
@@ -281,22 +293,15 @@ onUnmounted(() => {
         <el-form-item :label="$t('labels.custom')">
           <div class="daterange">
             <el-date-picker
-              v-model="form.startTime"
-              type="date"
+              v-model="dateRange"
+              type="daterange"
               start-placeholder="Start date"
               end-placeholder="End date"
+              range-separator="-"
               value-format="x"
-              size="small"
-              :popper-options="{
-                placement: 'top',
-              }"
-            />-
-            <el-date-picker
-              v-model="form.endTime"
-              type="date"
-              start-placeholder="Start date"
-              end-placeholder="End date"
-              value-format="x"
+              unlink-panels
+              @change="handleDateChange"
+              :shortcuts="shortcuts"
               size="small"
               :popper-options="{
                 placement: 'top',
