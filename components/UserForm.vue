@@ -68,8 +68,8 @@ const handleFilter = async (
   await formEl.validate(async (valid, fields) => {
     debugger
     if (valid) {
-      let monday = 0;
-      let sunday = 0;
+      let afterTime = 0;
+      let beforeTime = 0;
       let view_name = "";
       loading.value = true;
       if (!selection.value) {
@@ -77,14 +77,13 @@ const handleFilter = async (
         return;
       }
       if (type === "custom") {
-        monday = form.value.startTime;
-        sunday = form.value.endTime;
+        afterTime = dayjs(form.value.startTime).subtract(1, "day").valueOf();
+        beforeTime = dayjs(form.value.endTime).add(1, "day").valueOf();
         view_name = "newView";
-        debugger;
       } else {
         let res = getDays(type);
-        monday = res.monday;
-        sunday = res.sunday;
+        afterTime = dayjs(res.monday).subtract(1, "day").valueOf();
+        beforeTime = dayjs(res.sunday).add(1, "day").valueOf();
         view_name = res.view_name;
       }
       if (form.value.showInNew) {
@@ -99,7 +98,7 @@ const handleFilter = async (
         newViewId.value = selection.value.viewId!;
       }
       let viewInfo = await getView(newViewId.value);
-      await setWeek(monday, sunday, viewInfo);
+      await setWeek(afterTime, beforeTime, viewInfo);
       loading.value = false;
     }
   });
