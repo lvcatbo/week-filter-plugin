@@ -14,5 +14,5 @@ You can learn more in the [Base Extension Development Guide](https://bytedance.f
 
 ## Repository
 
-1. [GitHub](https://github.com/Ncrybo/week-filter-plugin)
+1. [GitHub](https://github.com/lvcatbo/week-filter-plugin)
 2. [Replit](https://replit.com/@dongbobo2001/week-filter-plugin)
