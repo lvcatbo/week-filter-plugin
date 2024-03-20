@@ -1,15 +1,22 @@
-run = "npm run dev"
+onBoot = "pnpm install"
+run = "vite"
 entrypoint = "src/App.vue"
 
-hidden = [".config", "tsconfig.json", "tsconfig.node.json", "vite.config.js", ".gitignore"]
+hidden = [
+  ".config",
+  "tsconfig.json",
+  "tsconfig.node.json",
+  "vite.config.js",
+  ".gitignore",
+]
 
 [nix]
-channel = "stable-22_11"
+channel = "stable-21_11"
 
 [env]
-PATH = "$REPL_HOME/.config/npm/node_global/bin:$REPL_HOME/node_modules/.bin"
+PATH = "/home/runner/$REPL_SLUG/.config/npm/node_global/bin:/home/runner/$REPL_SLUG/node_modules/.bin"
 XDG_CONFIG_HOME = "/home/runner/.config"
-npm_config_prefix = "$REPL_HOME/.config/npm/node_global"
+npm_config_prefix = "/home/runner/$REPL_SLUG/.config/npm/node_global"
 
 [gitHubImport]
 requiredFiles = [".replit", "replit.nix", ".config"]
@@ -17,10 +24,10 @@ requiredFiles = [".replit", "replit.nix", ".config"]
 [packager]
 language = "nodejs"
 
-  [packager.features]
-  packageSearch = true
-  guessImports = true
-  enabledForHosting = false
+[packager.features]
+packageSearch = true
+guessImports = true
+enabledForHosting = false
 
 [languages]
 
@@ -31,10 +38,8 @@ pattern = "**/{*.js,*.jsx,*.ts,*.tsx}"
 start = "typescript-language-server --stdio"
 
 [deployment]
-deploymentTarget = "static"
-build = ["npm", "run", "build"]
-publicDir = "dist"
-
+build = ["sh", "-c", "npm run build"]
+run = ["sh", "-c", "npm run preview"]
 [[ports]]
 localPort = 5173
 externalPort = 80
