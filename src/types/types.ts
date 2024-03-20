@@ -35,13 +35,6 @@ interface IFilterInfo {
   }[],
 }
 
-interface QueryData{
-  appToken: string,
-  personalToken: string,
-  tableId: string,
-  viewId?: string,
-}
-
 
 interface Option {
   color: "" | "default" | "warning" | "primary" | "success" | "text" | "info" | "danger",
