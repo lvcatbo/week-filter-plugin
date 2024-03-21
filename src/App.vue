@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import Form from '@/components/Form.vue'
+import bgImg from '@/assets/beams.jpg'
 </script>
 
 <template>
   <!-- 最底层容器 -->
-  <div class=" min-h-screen bg-center bg-cover w-full p-2" style="background-image: url('/src/assets/beams.jpg');">
+  <div class=" min-h-screen bg-center bg-cover w-full p-2" :style="{backgroundImage: `url(${bgImg})`}">
     <!-- 顶部索引栏 -->
     <div class="flex justify-between w-full text-base">
       <!-- 左边 -->
