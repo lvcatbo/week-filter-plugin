@@ -1,15 +1,14 @@
 # Abstract
 
 This is a date-based conditional filtering plugin designed for Lark multi-dimensional tables. <br>
-It's a full-stack project developed using Nuxt, hoping it can help you complete tasks efficiently.
 
 
 ## Usage
-Please refer to the [usage guidance](https://raotv7asrln.feishu.cn/docx/Rk2xdAHOio7ctuxzyzQc6x7RnSd?from=from_copylink)
+Please refer to the [usage guidance](https://nd9omx5l6b.feishu.cn/docx/C6IYdCKV2ouArTxVNxWc7suXnxj?from=from_copylink)
 
 ## Learn More
 
-You can learn more in the [Base Extension Development Guide](https://bytedance.feishu.cn/docx/VxhudDXbyo1V7jxAcTbctJQ5nvc) or [多维表格扩展脚本开发指南](https://bytedance.feishu.cn/docx/HazFdSHH9ofRGKx8424cwzLlnZc).
+You can learn more in the [Base Extension Development Guide](https://bytedance.feishu.cn/docx/VxhudDXbyo1V7jxAcTbctJQ5nvc) or [多维表格扩展脚本开发指南](https://feishu.feishu.cn/docx/U3wodO5eqome3uxFAC3cl0qanIe?from=from_copylink).
 
 
 ## Repository

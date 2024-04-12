@@ -252,8 +252,8 @@ onUnmounted(() => {
 
 <template>
   <div class="filter-form w-full">
-    <el-form :model="userForm" ref="formRef" :rules="rules" label-width="auto" class="w-10/12" v-loading="loading">
-      <el-form-item :label="$t('labels.targetField')" prop="fieldId">
+    <el-form :model="userForm" ref="formRef" :rules="rules" label-width="auto" v-loading="loading">
+      <el-form-item :label="$t('labels.targetField')" prop="fieldId" class="w-10/12">
         <el-select v-model="userForm.fieldId">
           <el-option v-for="item in timeFieldList" :key="item.id" :label="item.name" :value="item.id"></el-option>
         </el-select>
