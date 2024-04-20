@@ -49,6 +49,7 @@ export default {
   "button": {
       "confirm": "确定",
       "cancel": "取消",
+      "export": "导出Excel",
   },
   "shortcut": {
       "lastYear": "上年度",
@@ -68,4 +69,5 @@ export default {
   "guide": "使用说明",
   "about": "与我联系",
   "issue": "问题反馈",
+  "tools": "实用工具",
 }

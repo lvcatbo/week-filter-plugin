@@ -47,6 +47,7 @@ export default {
   "button": {
       "confirm": "Confirm",
       "cancel": "Cancel",
+      "export": "Export Excel",
   },
   "shortcut": {
       "lastYear": "Last Year",
@@ -66,4 +67,5 @@ export default {
   "guide": "guide",
   "about": "contact me",
   "issue": "issue",
+  "tools": "Tools",
 }

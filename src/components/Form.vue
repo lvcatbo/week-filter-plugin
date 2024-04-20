@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { bitable, IFieldMeta, ITable, FieldType, ViewType, IAddViewResult, IGridView, IAddFilterConditionParams, FilterOperator, FilterInfoCondition, IFilterInfo, OperationType, PermissionEntity, ToastType, Selection  } from "@lark-base-open/js-sdk";
+import { bitable, IFieldMeta, ITable, FieldType, ViewType, IAddViewResult, IGridView, IAddFilterConditionParams, FilterOperator, FilterInfoCondition, IFilterInfo, OperationType, PermissionEntity, ToastType, Selection } from "@lark-base-open/js-sdk";
 import { useI18n } from "vue-i18n";
 import { ElMessage, FormInstance } from "element-plus";
 import { weekOptions, monthOptions, FilterType } from '@/types/types'
 import shortcutsFn from "@/types/shortcuts";
+import exportExcel from '@/tools/excel_export'
 
 import dayjs from 'dayjs'
 import weekday from "dayjs/plugin/weekday";
@@ -44,7 +45,7 @@ onBeforeMount(async () => {
   );
   hasEditPermi.value = await base.getPermission({
     entity: PermissionEntity.Table,
-    param: {tableId: cuTable.value.id},
+    param: { tableId: cuTable.value.id },
     type: OperationType.Editable,
   })
 });
@@ -82,7 +83,7 @@ const onSubmit = async (filterType: FilterType, formEl: FormInstance | undefined
   if (!formEl) return;
 
   await formEl.validate(async (valid) => {
-    if(!valid) return;
+    if (!valid) return;
     loading.value = true;
 
     /**
@@ -90,12 +91,12 @@ const onSubmit = async (filterType: FilterType, formEl: FormInstance | undefined
      */
     let viewNewName = '';
     if (filterType != 'custom') {
-      let {startTime, endTime, viewName}: { startTime: number, endTime: number, viewName: string } = set_time_viewName(filterType);
+      let { startTime, endTime, viewName }: { startTime: number, endTime: number, viewName: string } = set_time_viewName(filterType);
       userForm.value.startTime = startTime;
       userForm.value.endTime = endTime
       viewNewName = viewName
     }
-    const conditions : IAddFilterConditionParams = [
+    const conditions: IAddFilterConditionParams = [
       {
         fieldId: userForm.value.fieldId,
         operator: FilterOperator.IsGreater,
@@ -112,23 +113,23 @@ const onSubmit = async (filterType: FilterType, formEl: FormInstance | undefined
      * 确定目标视图
      * @targetView 为当前视图 or 新视图
      */
-    let targetView: IGridView | undefined = undefined; 
+    let targetView: IGridView | undefined = undefined;
     try {
-      if(userForm.value.showInNew) {
-        const viewResult: IAddViewResult | undefined  = await cuTable.value?.addView({  name: viewNewName, type: ViewType.Grid});
-        if(!viewResult) {
+      if (userForm.value.showInNew) {
+        const viewResult: IAddViewResult | undefined = await cuTable.value?.addView({ name: viewNewName, type: ViewType.Grid });
+        if (!viewResult) {
           ElMessage.error('faild');
           return;
         }
         targetView = await cuTable.value?.getViewById(viewResult.viewId) as IGridView;
-      } 
+      }
       else {
-          targetView = await cuTable.value?.getActiveView() as IGridView;
+        targetView = await cuTable.value?.getActiveView() as IGridView;
       }
 
-      if(targetView) {
+      if (targetView) {
         await updateFilter(targetView, conditions);
-        if( userForm.value.applySetting) {
+        if (userForm.value.applySetting) {
           await targetView.applySetting();
         }
       }
@@ -153,13 +154,13 @@ const onSubmit = async (filterType: FilterType, formEl: FormInstance | undefined
  */
 async function updateFilter(targetView: IGridView, newConditions: FilterInfoCondition[]) {
   const filterInfo: IFilterInfo | null = await targetView.getFilterInfo();
-  if(filterInfo != null && filterInfo.conditions.length > 0) {
+  if (filterInfo != null && filterInfo.conditions.length > 0) {
     const delIds: any[] = filterInfo.conditions.map(item => {
-      if(item.fieldId == userForm.value.fieldId) return item.conditionId
+      if (item.fieldId == userForm.value.fieldId) return item.conditionId
     });
-    if(delIds.length > 0) {
-      for(let id of delIds) {
-        let res =  await targetView.deleteFilterCondition(id);
+    if (delIds.length > 0) {
+      for (let id of delIds) {
+        let res = await targetView.deleteFilterCondition(id);
         !res && ElMessage.warning('操作失败')
       }
     }
@@ -175,7 +176,7 @@ async function updateFilter(targetView: IGridView, newConditions: FilterInfoCond
  * @param filterType: 筛选类型
  * @return {startTime, endTime, viewName} 早于startTime, 晚于endTimem
  */
-function set_time_viewName(filterType : FilterType) {
+function set_time_viewName(filterType: FilterType) {
   let dateRange: { startTime: number; endTime: number };
   let viewName = '';
   switch (filterType) {
@@ -204,9 +205,9 @@ function set_time_viewName(filterType : FilterType) {
       viewName = t("monthNames.thisMonth");
       break;
     default:
-    throw new Error(`Unsupported filter type: ${filterType}`);
+      throw new Error(`Unsupported filter type: ${filterType}`);
   }
-  return {...dateRange, viewName}
+  return { ...dateRange, viewName }
 }
 
 const calculateWeekRange = (startDay: number, endDay: number) => {
@@ -244,6 +245,13 @@ const initFieldOption = async () => {
   );
 };
 
+/**
+ * 导出数据
+ */
+const exportData = () => {
+  exportExcel(cuTable.value);
+}
+
 onUnmounted(() => {
   off();
 });
@@ -261,8 +269,9 @@ onUnmounted(() => {
 
       <el-form-item :label="$t('labels.displayMode')">
         <el-switch v-model="userForm.showInNew" inline-prompt
-          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" :active-text="$t('switchTexts.newView')"
-          :inactive-text="$t('switchTexts.currentView')" :disabled="!hasEditPermi" />
+          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+          :active-text="$t('switchTexts.newView')" :inactive-text="$t('switchTexts.currentView')"
+          :disabled="!hasEditPermi" />
       </el-form-item>
 
       <el-form-item :label="$t('labels.applySetting')">
@@ -274,9 +283,9 @@ onUnmounted(() => {
       <el-form-item :label="$t('labels.weekFilter')">
         <div class="flex gap-2">
           <div class="btns">
-              <el-button v-for="item in weekOptions" :key="item.value" :type="item.color"
-                @click="onSubmit(item.value, formRef)">{{ $t(item.label) }}</el-button>
-            </div>
+            <el-button v-for="item in weekOptions" :key="item.value" :type="item.color"
+              @click="onSubmit(item.value, formRef)">{{ $t(item.label) }}</el-button>
+          </div>
         </div>
       </el-form-item>
 
@@ -286,36 +295,92 @@ onUnmounted(() => {
             @click="onSubmit(item.value, formRef)">{{ $t(item.label) }}</el-button>
         </div>
       </el-form-item>
-      <el-form-item :label="$t('labels.custom')"> 
+      <el-form-item :label="$t('labels.custom')">
         <div class="flex gap-1 w-10/12">
-          <el-date-picker
-            v-model="dateRange"
-            type="daterange"
-            start-placeholder="Start date"
-            end-placeholder="End date"
-            range-separator="-"
-            value-format="x"
-            unlink-panels
-            @change="handleDateChange"
-            :shortcuts="shortcuts"
-            size="small"
-            :popper-options="{
+          <el-date-picker v-model="dateRange" type="daterange" start-placeholder="Start date" end-placeholder="End date"
+            range-separator="-" value-format="x" unlink-panels @change="handleDateChange" :shortcuts="shortcuts"
+            size="small" :popper-options="{
               placement: 'top',
-            }"
-          />
-          <el-button
-            size="small"
-            type="primary"
-            @click="onSubmit('custom', formRef)"
-            >{{ $t("button.confirm") }}</el-button
-          >
+            }" />
+          <el-button size="small" type="primary" @click="onSubmit('custom', formRef)">{{ $t("button.confirm")
+            }}</el-button>
         </div>
       </el-form-item>
     </el-form>
-    
+    <div class="border-t border-gray-300 my-4"></div>
+    <!-- 更多工具 -->
+    <div class="">
+      <div class="title">{{ $t('tools') }}</div>
+      <div class="flex gap-2 text-nowrap">
+        <div class="w-35 btn-base excel-btn flex items-center mt-2 text-sm">
+          <span class="icon-ecel icon-[file-icons--microsoft-excel] text-green-200 mr-1  " style="width: 1.2em; height: 1.2em;"></span>
+          <span @click="exportData">{{ $t('button.export') }}</span>
+        </div>
+        <!-- <div class="w-35 btn-base mt-2 text-sm flex items-center clear-btn">
+          <span class="icon icon-[ant-design--clear-outlined] mr-1" style="width: 1.2em; height: 1.2em;"></span>
+          <span>清空日期筛选</span>
+        </div> -->
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
+.excel-btn {
+  background-color: #89d8d3;
+  background-image: linear-gradient(315deg, #89d8d3 0%, #03c8a8 74%);
+  border: none;
+  z-index: 1;
+}
+.clear-btn {
+  background-color: #f0ecfc;
+  background-image: linear-gradient(315deg, #ef87fb 0%, #f5576c 100%);
+  border: none;
+  z-index: 1;
+}
+.btn-base:after {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+  border-radius: 5px;
+  box-shadow:
+    -7px -7px 20px 0px #fff9,
+    -4px -4px 5px 0px #fff9,
+    7px 7px 20px 0px #0002,
+    4px 4px 5px 0px #0001;
+  transition: all 0.3s ease;
+}
 
+.btn-base:hover:after {
+  top: 0;
+  height: 100%;
+}
+.excel-btn:hover .icon-ecel{
+  color: #10b465;
+}
+
+.btn-base:active {
+  top: 2px;
+}
+
+.excel-btn:after {
+  background-color: #4dccc6;
+  background-image: linear-gradient(315deg, #4dccc6 0%, #96e4df 74%);
+}
+.clear-btn:after {
+  background-color: #da8be3;
+  background-image: linear-gradient(315deg, #f7acff 0%, #f3697b 100%);
+}
+
+.title {
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+  padding-left: 0.5rem;
+  border-left: 4px solid #3498db;
+
+}
 </style>
