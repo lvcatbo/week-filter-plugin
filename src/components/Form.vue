@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { bitable, IFieldMeta, ITable, FieldType, ViewType, IAddViewResult, IGridView, IAddFilterConditionParams, FilterOperator, FilterInfoCondition, IFilterInfo, OperationType, PermissionEntity, ToastType, Selection } from "@lark-base-open/js-sdk";
 import { useI18n } from "vue-i18n";
-import { ElMessage, FormInstance } from "element-plus";
+import { FormInstance } from "element-plus";
 import { weekOptions, monthOptions, FilterType } from '@/types/types'
 import shortcutsFn from "@/types/shortcuts";
 import exportExcel from '@/tools/excel_export'
+import deleteDateFilter from "@/tools/delete_date_filters";
 
 import dayjs from 'dayjs'
 import weekday from "dayjs/plugin/weekday";
@@ -252,6 +253,22 @@ const exportData = () => {
   exportExcel(cuTable.value);
 }
 
+/**
+ * 清空筛选
+ * @el : 点击的元素
+ */
+const deleteBtnRef = ref<HTMLElement>();
+const clearFilter = async (el: HTMLElement) => {
+  // 加载laoading
+  const loading =  ElLoading.service({ text: t('tips.handling'), background: 'rgba(0, 0, 0, 0.7)', target: el });
+  await deleteDateFilter(cuTable.value, t)
+  if (hasEditPermi.value && userForm.value.applySetting) {
+    const activeView = await cuTable.value.getActiveView();
+    await activeView?.applySetting();
+  }
+  loading.close();
+}
+
 onUnmounted(() => {
   off();
 });
@@ -312,14 +329,22 @@ onUnmounted(() => {
     <div class="">
       <div class="title">{{ $t('tools') }}</div>
       <div class="flex gap-2 text-nowrap">
-        <div class="w-35 btn-base excel-btn flex items-center mt-2 text-sm">
+        <div class="w-35 btn-base excel-btn flex items-center mt-2 text-sm" @click="exportData">
           <span class="icon-ecel icon-[file-icons--microsoft-excel] text-green-200 mr-1  " style="width: 1.2em; height: 1.2em;"></span>
-          <span @click="exportData">{{ $t('button.export') }}</span>
+          <span>{{ $t('button.export') }}</span>
         </div>
-        <!-- <div class="w-35 btn-base mt-2 text-sm flex items-center clear-btn">
-          <span class="icon icon-[ant-design--clear-outlined] mr-1" style="width: 1.2em; height: 1.2em;"></span>
-          <span>清空日期筛选</span>
-        </div> -->
+        
+        <el-tooltip
+          class="box-item"
+          effect="light"
+          :content="$t('tips.clearFilter')"
+          placement="bottom"
+        >
+          <div class="w-35 btn-base mt-2 text-sm flex items-center clear-btn" @click="clearFilter(deleteBtnRef)" ref="deleteBtnRef">
+            <span class="icon icon-[ant-design--clear-outlined] mr-1" style="width: 1.2em; height: 1.2em;"></span>
+            <span>{{ $t('button.clearFilter') }}</span>
+          </div>
+        </el-tooltip>
       </div>
     </div>
   </div>

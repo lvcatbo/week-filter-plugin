@@ -40,14 +40,16 @@ export default {
       "help1": "This plugin provides a quick date filtering function,",
       "help2": "For instructions and feedback, please refer to",
       "help3": "guide",
-      "help4": "How to get authorization code?",
-      "updateKey": "Sure update the authorization code ?"
+      "clearFilter": "Only clear all conditions related to dates",
+    	"faild": "Operation failed",
+			"success": "ok, done",
   },
 
   "button": {
       "confirm": "Confirm",
       "cancel": "Cancel",
       "export": "Export Excel",
+      "clearFilter": "Clear Filter",
   },
   "shortcut": {
       "lastYear": "Last Year",

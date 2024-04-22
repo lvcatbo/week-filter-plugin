@@ -41,8 +41,9 @@ export default {
       "help1": "此插件提供快捷日期筛选功能，",
       "help2": "使用说明和建议反馈请查阅",
       "help3": "日期插件使用指南",
-      "help4": "如何获取授权码",
-      "updateKey": "确定要更新授权码"
+      "clearFilter": "仅清空日期相关的所有条件",
+      "faild": "操作失败",
+      "success": "ok,已执行",
   },
 
   // 按钮文本
@@ -50,6 +51,7 @@ export default {
       "confirm": "确定",
       "cancel": "取消",
       "export": "导出Excel",
+      "clearFilter": "清空筛选",
   },
   "shortcut": {
       "lastYear": "上年度",
