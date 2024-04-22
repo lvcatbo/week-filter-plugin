@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { bitable, IFieldMeta, ITable, FieldType, ViewType, IAddViewResult, IGridView, IAddFilterConditionParams, FilterOperator, FilterInfoCondition, IFilterInfo, OperationType, PermissionEntity, ToastType, Selection } from "@lark-base-open/js-sdk";
+import { bitable, IFieldMeta, ITable, FieldType, ViewType, IAddViewResult, IGridView, IAddFilterConditionParams, FilterOperator, FilterInfoCondition, IFilterInfo, OperationType, PermissionEntity, ToastType, Selection, DateFormatter } from "@lark-base-open/js-sdk";
 import { useI18n } from "vue-i18n";
 import { FormInstance } from "element-plus";
 import { weekOptions, monthOptions, FilterType } from '@/types/types'
@@ -35,15 +35,20 @@ watchEffect(() => {
  * 在组建挂载前进行数据准备
  * 1. 获取当前 @Table 对象，（一切操作都要从Table对象开始）
  * 2. 获取字段列表
- * 3. 筛选出日期相关的字段 （因为此插件只对日期字段进行操作）
+ * 3. 过滤掉不支持的字段
  * 4. 查询权限是否可编辑， 禁用相关按钮
  */
 onBeforeMount(async () => {
   cuTable.value = await base.getActiveTable();
   let allFields: IFieldMeta[] = await cuTable.value.getFieldMetaList();
-  timeFieldList.value = allFields.filter(
-    (item) => [FieldType.DateTime, FieldType.CreatedTime, FieldType.ModifiedTime].includes(item.type)
-  );
+
+  // 过滤掉不支持的字段
+  const nosupportDateFormats = [DateFormatter.DATE_TIME, DateFormatter.DATE_TIME_WITH_HYPHEN];
+  timeFieldList.value = allFields
+    .filter((item) => [FieldType.DateTime, FieldType.CreatedTime, FieldType.ModifiedTime].includes(item.type) 
+      && !nosupportDateFormats.includes((item.property as any).dateFormat))
+  
+  // 查询是否有编辑权限
   hasEditPermi.value = await base.getPermission({
     entity: PermissionEntity.Table,
     param: { tableId: cuTable.value.id },
@@ -93,6 +98,8 @@ const onSubmit = async (filterType: FilterType, formEl: FormInstance | undefined
     let viewNewName = '';
     if (filterType != 'custom') {
       let { startTime, endTime, viewName }: { startTime: number, endTime: number, viewName: string } = set_time_viewName(filterType);
+      // console.log('早于' + dayjs(startTime).format('YYYY-MM-DD HH:mm:ss'));
+      // console.log('晚于' + dayjs(endTime).format('YYYY-MM-DD HH:mm:ss'));
       userForm.value.startTime = startTime;
       userForm.value.endTime = endTime
       viewNewName = viewName
@@ -156,13 +163,13 @@ const onSubmit = async (filterType: FilterType, formEl: FormInstance | undefined
 async function updateFilter(targetView: IGridView, newConditions: FilterInfoCondition[]) {
   const filterInfo: IFilterInfo | null = await targetView.getFilterInfo();
   if (filterInfo != null && filterInfo.conditions.length > 0) {
-    const delIds: any[] = filterInfo.conditions.map(item => {
-      if (item.fieldId == userForm.value.fieldId) return item.conditionId
-    });
+    const delIds: any[] = filterInfo.conditions
+      ?.filter(item => item.fieldId == userForm.value.fieldId)
+      ?.map(item => item.conditionId) || [];
     if (delIds.length > 0) {
       for (let id of delIds) {
         let res = await targetView.deleteFilterCondition(id);
-        !res && ElMessage.warning('操作失败')
+        !res && ElMessage.warning(t('tips.faild'))
       }
     }
   }
@@ -182,15 +189,15 @@ function set_time_viewName(filterType: FilterType) {
   let viewName = '';
   switch (filterType) {
     case weekOptions.lastWeek.value:
-      dateRange = calculateWeekRange(-8, 0);
+      dateRange = calculateWeekRange(-7, -1);
       viewName = t("weekNames.lastWeek");
       break;
     case weekOptions.nextWeek.value:
-      dateRange = calculateWeekRange(6, 14);
+      dateRange = calculateWeekRange(7, 13);
       viewName = t("weekNames.nextWeek");
       break;
     case weekOptions.thisWeek.value:
-      dateRange = calculateWeekRange(-1, 7);
+      dateRange = calculateWeekRange(0, 6);
       viewName = t("weekNames.thisWeek");
       break;
     case monthOptions.lastMonth.value:
@@ -213,15 +220,15 @@ function set_time_viewName(filterType: FilterType) {
 
 const calculateWeekRange = (startDay: number, endDay: number) => {
   return {
-    startTime: dayjs().weekday(startDay).valueOf(),
-    endTime: dayjs().weekday(endDay).valueOf(),
+    startTime: dayjs().weekday(startDay - 1).endOf('day').valueOf(),
+    endTime: dayjs().weekday(endDay + 1).startOf('day').valueOf(),
   };
 };
 
 const calculateMonthRange = (monthOffset: number) => {
   return {
-    startTime: dayjs().add(monthOffset, "month").startOf("month").subtract(1, 'day').valueOf(),
-    endTime: dayjs().add(monthOffset, "month").endOf("month").add(1, 'day').valueOf(),
+    startTime: dayjs().add(monthOffset - 1, "month").endOf("month").valueOf(),
+    endTime: dayjs().add(monthOffset + 1, "month").startOf("month").valueOf(),
   };
 };
 
