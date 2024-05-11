@@ -1,7 +1,5 @@
 import { createApp } from 'vue'
+import '@/assets/style.css'
 import App from './App.vue'
-import "@/assets/preflight.css"
-import "@/assets/index.css"
-import { i18n } from './local/index.ts'
 
-createApp(App).use(i18n).mount('#app')
+createApp(App).mount('#app')
