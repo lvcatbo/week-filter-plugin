@@ -1,7 +1,7 @@
 {
   "name": "filter-plugin",
   "private": true,
-  "version": "0.0.0",
+  "version": "3.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,7 +11,10 @@
   "dependencies": {
     "@lark-base-open/js-sdk": "^0.3.8",
     "ant-design-vue": "^4.2.1",
-    "vue": "^3.4.21"
+    "dayjs": "^1.11.11",
+    "vue": "^3.4.21",
+    "vue-i18n": "9",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.2/xlsx-0.20.2.tgz"
   },
   "devDependencies": {
     "@iconify/json": "^2.2.208",
