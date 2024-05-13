@@ -6,6 +6,10 @@ import { resolve } from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: './',
+  build: {
+    target: 'esnext'
+  },
   plugins: [
     vue(),
     Components({
