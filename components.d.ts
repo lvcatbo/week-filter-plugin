@@ -8,8 +8,6 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AButton: typeof import('ant-design-vue/es')['Button']
-    ACheckbox: typeof import('ant-design-vue/es')['Checkbox']
-    AConfigProvider: typeof import('ant-design-vue/es')['ConfigProvider']
     ADivider: typeof import('ant-design-vue/es')['Divider']
     AForm: typeof import('ant-design-vue/es')['Form']
     AFormItem: typeof import('ant-design-vue/es')['FormItem']
@@ -19,8 +17,6 @@ declare module 'vue' {
     ASelectOption: typeof import('ant-design-vue/es')['SelectOption']
     ASwitch: typeof import('ant-design-vue/es')['Switch']
     ATooltip: typeof import('ant-design-vue/es')['Tooltip']
-    Form: typeof import('./src/components/Form.vue')['default']
-    HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     HelpInfo: typeof import('./src/components/HelpInfo.vue')['default']
     SelectForm: typeof import('./src/components/SelectForm.vue')['default']
     ToolBox: typeof import('./src/components/ToolBox.vue')['default']
