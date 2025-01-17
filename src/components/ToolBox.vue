@@ -27,16 +27,15 @@ const clearFilter = async (ref: any) => {
 
 <template>
   <div class="">
-    <div class="title">{{ $t('tools') }}</div>
     <div class="flex gap-2 text-nowrap">
-      <div class="flex items-center mt-2 text-sm w-35 btn-base excel-btn" @click="exportData">
-        <span class="icon-ecel icon-[file-icons--microsoft-excel] text-green-200 mr-1  "
+      <div class="flex items-center text-sm w-35 btn-base excel-btn" @click="exportData">
+        <span class="icon-[file-icons--microsoft-excel] text-green-200 mr-1  "
           style="width: 1.2em; height: 1.2em;"></span>
         <span>{{ $t('export') }}</span>
       </div>
 
       <a-tooltip  :title="$t('tips.clearFilter')" color="#2db7f5" placement="bottomLeft">
-        <div @click="clearFilter" class="flex items-center mt-2 text-sm w-35 btn-base clear-btn"
+        <div @click="clearFilter" class="flex items-center text-sm w-35 btn-base clear-btn"
         >
           <span class="icon icon-[ant-design--clear-outlined] mr-1" style="width: 1.2em; height: 1.2em;"></span>
           <span>{{ $t('clearFilter') }}</span>

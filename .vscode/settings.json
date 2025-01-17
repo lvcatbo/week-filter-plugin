@@ -1,3 +1,6 @@
 {
-  "nuxt.isNuxtApp": false
+    "typescript.tsdk": "node_modules\\typescript\\lib",
+    "i18n-ally.localesPaths": [
+        "src/locale"
+    ]
 }
