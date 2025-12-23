@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@lark-base-open/js-sdk": "^0.4.0",
+    "@lark-base-open/js-sdk": "^1.0.0",
     "ant-design-vue": "4.x",
     "dayjs": "^1.11.13",
     "vue": "^3.5.13",

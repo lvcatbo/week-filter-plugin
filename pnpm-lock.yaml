@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@lark-base-open/js-sdk':
-        specifier: ^0.4.0
-        version: 0.4.0
+        specifier: ^1.0.0
+        version: 1.0.0
       ant-design-vue:
         specifier: 4.x
         version: 4.2.6(vue@3.5.13(typescript@5.6.3))
@@ -323,8 +323,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
 
-  '@lark-base-open/js-sdk@0.4.0':
-    resolution: {integrity: sha512-Q4mU3xPFSkPKKjfWg9EYnXakuhH15E0eRvQmFbc/3WRbZhCfflNdppoUUX57sE+aObQj5j+ZudM4RigRWLFxVw==}
+  '@lark-base-open/js-sdk@1.0.0':
+    resolution: {integrity: sha512-eAqiVJiSd1ZT5TTqEhgsVdVw9PVXCe7+yMeXiPgi4NrvdKb7TiBNe40MuV2hvm8B8RNbMXPgLh4DaTmRGmRnUQ==}
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -1484,7 +1484,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
 
-  '@lark-base-open/js-sdk@0.4.0': {}
+  '@lark-base-open/js-sdk@1.0.0': {}
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
