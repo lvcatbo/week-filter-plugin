@@ -45,14 +45,29 @@ const off = base.onSelectionChange(async (event: { data: Selection }) => {
     table.value = await base.getTableById(event.data.tableId);
     view.value = await table.value.getActiveView();
     viewType = await view.value.getType();
-    hasEditPermi.value = await hasPermi(table.value.id)
+    hasEditPermi.value = await hasPermi(table.value.id);
+
+    // 更新表单选项（日期字段列表）
+    await updateDateFields();
   }
   else if (view.value.id != event.data.viewId) {
     view.value = await table.value.getViewById(event.data.viewId);
     viewType = await view.value.getType();
-    hasEditPermi.value = await hasPermi(table.value.id)
+    hasEditPermi.value = await hasPermi(table.value.id);
   }
-})
+});
+
+/**
+ * 更新日期字段列表
+ */
+async function updateDateFields() {
+  const fields = await view.value.getFieldMetaList();
+  dateFields.value = fields.filter(field =>
+    [FieldType.CreatedTime, FieldType.DateTime, FieldType.ModifiedTime].includes(field.type)
+  );
+  // 重置已选字段
+  fieldId.value = '';
+}
 
 /* 组件卸载时清理事件监听器 */
 onUnmounted(() => {
