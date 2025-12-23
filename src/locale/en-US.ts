@@ -10,8 +10,8 @@ export default {
   future: 'Future',
   days: 'Days',
   month: 'Month',
-  syncForAll: 'Sync All',
-  nosyncForAll: 'No Sync',
+  syncForAll: 'Save',
+  nosyncForAll: 'Skip',
   currentView: 'Current View',
   newView: 'New View',
   startFilter: 'Filter',
@@ -28,6 +28,10 @@ export default {
   thisYear: 'This Year',
   nextYear: 'Next Year',
   filterByQuarter: 'By Quarter',
+  confirm: 'Confirm',
+  cancel: 'Cancel',
+  clearFilter: 'Clear Filter',
+  reset: 'Reset',
 
   tips: {
     selectField: 'Please select a field',

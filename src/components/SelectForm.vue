@@ -299,6 +299,18 @@ function isGridView(view: IView) {
   return [ViewType.Grid, ViewType.Kanban, ViewType.Gallery, ViewType.Gantt, ViewType.Calendar].includes(viewType);
 }
 
+/**
+ * 重置表单
+ */
+function resetForm() {
+  fieldId.value = '';
+  startTime.value = undefined;
+  endTime.value = undefined;
+  timego.value = 'past';
+  timeUnit.value = 'day';
+  num.value = 0;
+}
+
 </script>
 
 <template>
@@ -344,7 +356,12 @@ function isGridView(view: IView) {
             :un-checked-children="$t('nosyncForAll')" />
           <a-switch v-model:checked="isNew" :disabled="!hasEditPermi" :checked-children="$t('newView')"
             :un-checked-children="$t('currentView')" />
-          <a-button type="primary" @click="submit" class="ml-1">{{ $t('startFilter') }}</a-button>
+          <a-tooltip :title="$t('reset')" placement="top">
+            <a-button @click="resetForm" class="reset-btn">
+              <span class="icon icon-[ant-design--reload-outlined]"></span>
+            </a-button>
+          </a-tooltip>
+          <a-button type="primary" @click="submit">{{ $t('confirm') }}</a-button>
         </div>
       </a-form-item>
 
@@ -413,5 +430,22 @@ function isGridView(view: IView) {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.reset-btn {
+  padding: 4px 8px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .icon {
+    font-size: 16px;
+  }
+}
+
+.action-buttons {
+  justify-content: center;
+  gap: 12px;
 }
 </style>
