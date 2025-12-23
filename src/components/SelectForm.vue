@@ -3,7 +3,7 @@ import ToolBox from './ToolBox.vue';
 import { bitable, FilterOperator, FieldType, ViewType, PermissionEntity, OperationType } from '@lark-base-open/js-sdk'
 import type { ITable, Selection, IFieldMeta, IView, IGridView } from '@lark-base-open/js-sdk';
 import { message, Modal } from 'ant-design-vue';
-import { ref, shallowRef } from 'vue'
+import { ref, shallowRef, onUnmounted } from 'vue'
 import dayjs from '@/plugins/dayjs';
 import { Dayjs } from 'dayjs';
 
@@ -29,7 +29,7 @@ const base = bitable.base;
 const table = shallowRef<ITable>(await base.getActiveTable());
 
 const view = shallowRef<IView>(await table.value.getActiveView());
-if (!table.value && !view.value) {
+if (!table.value || !view.value) {
   message.error(t('notgetTableAndView'));
   throw Error('没有获取到表格 和 视图，请刷新重试');
 }
@@ -52,6 +52,11 @@ const off = base.onSelectionChange(async (event: { data: Selection }) => {
     viewType = await view.value.getType();
     hasEditPermi.value = await hasPermi(table.value.id)
   }
+})
+
+/* 组件卸载时清理事件监听器 */
+onUnmounted(() => {
+  off()
 })
 
 /** 目标字段ID */
@@ -147,10 +152,13 @@ async function submit() {
   // 3. 删除旧筛选，再新增筛选条件
   try {
     let filterInfo = await gridView.getFilterInfo();
-    filterInfo && filterInfo.conditions.forEach(async element => {
-      if (element.fieldId == fieldId.value)
-        await gridView.deleteFilterCondition(element.conditionId);
-    });
+    if (filterInfo) {
+      await Promise.all(
+        filterInfo.conditions
+          .filter(element => element.fieldId == fieldId.value)
+          .map(element => gridView.deleteFilterCondition(element.conditionId))
+      );
+    }
 
     await gridView.addFilterCondition({
       value: startTime.value.startOf('day').subtract(1, 'second').valueOf(),

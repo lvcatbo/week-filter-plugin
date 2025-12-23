@@ -25,7 +25,7 @@ declare module 'vue' {
     ASpaceCompact: typeof import('ant-design-vue/es')['Compact']
     ASwitch: typeof import('ant-design-vue/es')['Switch']
     ATooltip: typeof import('ant-design-vue/es')['Tooltip']
-    HelpInfo: typeof import('./src/components/helpInfo.vue')['default']
+    HelpInfo: typeof import('./src/components/HelpInfo.vue')['default']
     SelectForm: typeof import('./src/components/SelectForm.vue')['default']
     ToolBox: typeof import('./src/components/ToolBox.vue')['default']
   }
