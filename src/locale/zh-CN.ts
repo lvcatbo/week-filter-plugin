@@ -30,7 +30,6 @@ export default {
   filterByQuarter: '按季筛选',
   confirm: '确认',
   cancel: '取消',
-  export: 'Excel 导出',
   clearFilter: '清空筛选',
 
   tips: {

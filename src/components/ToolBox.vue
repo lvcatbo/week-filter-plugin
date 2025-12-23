@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import deleteDateFilter from '@/tools/delete_date_filters';
-import exportExcel from '@/tools/excel_export';
 import { ITable } from '@lark-base-open/js-sdk';
 import { useI18n } from 'vue-i18n';
 
@@ -11,10 +10,6 @@ const props = defineProps<{
   hasEditPermi: boolean;
   autoApply: boolean;
 }>();
-
-const exportData = () => {
-  exportExcel(props.cuTable);
-}
 
 const clearFilter = async (ref: any) => {
   await deleteDateFilter(props.cuTable, t)
@@ -28,12 +23,6 @@ const clearFilter = async (ref: any) => {
 <template>
   <div class="">
     <div class="flex gap-2 text-nowrap">
-      <div class="flex items-center text-sm w-35 btn-base excel-btn" @click="exportData">
-        <span class="icon-[file-icons--microsoft-excel] text-green-200 mr-1  "
-          style="width: 1.2em; height: 1.2em;"></span>
-        <span>{{ $t('export') }}</span>
-      </div>
-
       <a-tooltip  :title="$t('tips.clearFilter')" color="#2db7f5" placement="bottomLeft">
         <div @click="clearFilter" class="flex items-center text-sm w-35 btn-base clear-btn"
         >
@@ -46,13 +35,6 @@ const clearFilter = async (ref: any) => {
 </template>
 
 <style scoped>
-.excel-btn {
-  background-color: #89d8d3;
-  background-image: linear-gradient(315deg, #89d8d3 0%, #03c8a8 74%);
-  border: none;
-  z-index: 1;
-}
-
 .clear-btn {
   background-color: #f0ecfc;
   background-image: linear-gradient(315deg, #ef87fb 0%, #f5576c 100%);
@@ -82,17 +64,8 @@ const clearFilter = async (ref: any) => {
   height: 100%;
 }
 
-.excel-btn:hover .icon-ecel {
-  color: #10b465;
-}
-
 .btn-base:active {
   top: 2px;
-}
-
-.excel-btn:after {
-  background-color: #4dccc6;
-  background-image: linear-gradient(315deg, #4dccc6 0%, #96e4df 74%);
 }
 
 .clear-btn:after {
