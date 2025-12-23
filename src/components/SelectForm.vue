@@ -3,7 +3,7 @@ import ToolBox from './ToolBox.vue';
 import { bitable, FilterOperator, FieldType, ViewType, PermissionEntity, OperationType } from '@lark-base-open/js-sdk'
 import type { ITable, Selection, IFieldMeta, IView, IGridView } from '@lark-base-open/js-sdk';
 import { message, Modal } from 'ant-design-vue';
-import { ref, shallowRef } from 'vue'
+import { ref, shallowRef, onUnmounted } from 'vue'
 import dayjs from '@/plugins/dayjs';
 import { Dayjs } from 'dayjs';
 
@@ -29,7 +29,7 @@ const base = bitable.base;
 const table = shallowRef<ITable>(await base.getActiveTable());
 
 const view = shallowRef<IView>(await table.value.getActiveView());
-if (!table.value && !view.value) {
+if (!table.value || !view.value) {
   message.error(t('notgetTableAndView'));
   throw Error('没有获取到表格 和 视图，请刷新重试');
 }
@@ -45,13 +45,33 @@ const off = base.onSelectionChange(async (event: { data: Selection }) => {
     table.value = await base.getTableById(event.data.tableId);
     view.value = await table.value.getActiveView();
     viewType = await view.value.getType();
-    hasEditPermi.value = await hasPermi(table.value.id)
+    hasEditPermi.value = await hasPermi(table.value.id);
+
+    // 更新表单选项（日期字段列表）
+    await updateDateFields();
   }
   else if (view.value.id != event.data.viewId) {
     view.value = await table.value.getViewById(event.data.viewId);
     viewType = await view.value.getType();
-    hasEditPermi.value = await hasPermi(table.value.id)
+    hasEditPermi.value = await hasPermi(table.value.id);
   }
+});
+
+/**
+ * 更新日期字段列表
+ */
+async function updateDateFields() {
+  const fields = await view.value.getFieldMetaList();
+  dateFields.value = fields.filter(field =>
+    [FieldType.CreatedTime, FieldType.DateTime, FieldType.ModifiedTime].includes(field.type)
+  );
+  // 重置已选字段
+  fieldId.value = '';
+}
+
+/* 组件卸载时清理事件监听器 */
+onUnmounted(() => {
+  off()
 })
 
 /** 目标字段ID */
@@ -147,10 +167,13 @@ async function submit() {
   // 3. 删除旧筛选，再新增筛选条件
   try {
     let filterInfo = await gridView.getFilterInfo();
-    filterInfo && filterInfo.conditions.forEach(async element => {
-      if (element.fieldId == fieldId.value)
-        await gridView.deleteFilterCondition(element.conditionId);
-    });
+    if (filterInfo) {
+      await Promise.all(
+        filterInfo.conditions
+          .filter(element => element.fieldId == fieldId.value)
+          .map(element => gridView.deleteFilterCondition(element.conditionId))
+      );
+    }
 
     await gridView.addFilterCondition({
       value: startTime.value.startOf('day').subtract(1, 'second').valueOf(),
@@ -276,6 +299,18 @@ function isGridView(view: IView) {
   return [ViewType.Grid, ViewType.Kanban, ViewType.Gallery, ViewType.Gantt, ViewType.Calendar].includes(viewType);
 }
 
+/**
+ * 重置表单
+ */
+function resetForm() {
+  fieldId.value = '';
+  startTime.value = undefined;
+  endTime.value = undefined;
+  timego.value = 'past';
+  timeUnit.value = 'day';
+  num.value = 0;
+}
+
 </script>
 
 <template>
@@ -321,7 +356,12 @@ function isGridView(view: IView) {
             :un-checked-children="$t('nosyncForAll')" />
           <a-switch v-model:checked="isNew" :disabled="!hasEditPermi" :checked-children="$t('newView')"
             :un-checked-children="$t('currentView')" />
-          <a-button type="primary" @click="submit" class="ml-1">{{ $t('startFilter') }}</a-button>
+          <a-tooltip :title="$t('reset')" placement="top">
+            <a-button @click="resetForm" class="reset-btn">
+              <span class="icon icon-[ant-design--reload-outlined]"></span>
+            </a-button>
+          </a-tooltip>
+          <a-button type="primary" @click="submit">{{ $t('confirm') }}</a-button>
         </div>
       </a-form-item>
 
@@ -390,5 +430,22 @@ function isGridView(view: IView) {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.reset-btn {
+  padding: 4px 8px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .icon {
+    font-size: 16px;
+  }
+}
+
+.action-buttons {
+  justify-content: center;
+  gap: 12px;
 }
 </style>

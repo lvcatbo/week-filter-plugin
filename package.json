@@ -9,12 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@lark-base-open/js-sdk": "^0.4.0",
+    "@lark-base-open/js-sdk": "^1.0.0",
     "ant-design-vue": "4.x",
     "dayjs": "^1.11.13",
     "vue": "^3.5.13",
-    "vue-i18n": "10",
-    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.2/xlsx-0.20.2.tgz"
+    "vue-i18n": "10"
   },
   "devDependencies": {
     "@iconify-json/ant-design": "^1.2.5",

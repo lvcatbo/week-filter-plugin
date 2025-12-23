@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { bitable } from '@lark-base-open/js-sdk';
-import helpInfo from './components/helpInfo.vue'; '@/components/helpInfo.vue'
+import HelpInfo from './components/HelpInfo.vue';
 import SelectForm from './components/SelectForm.vue';
 
 
@@ -18,7 +18,7 @@ bitable.bridge.getLanguage().then(locale => {
   <div class="w-screen h-screen bg-[url('/src/assets/beams.jpg')] bg-cover bg-center p-2 overflow-x-hidden">
     <Suspense>
       <a-config-provider :locale="lang">
-        <helpInfo />
+        <HelpInfo />
         <SelectForm />
       </a-config-provider>
     </Suspense>

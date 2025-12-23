@@ -10,8 +10,8 @@ export default {
   future: '未来',
   day: '天',
   month: '月',
-  syncForAll: '同步给所有人',
-  nosyncForAll: '不同步给他人',
+  syncForAll: '保存',
+  nosyncForAll: '不保存',
   currentView: '当前视图',
   newView: '新的视图',
   startFilter: '开始筛选',
@@ -30,8 +30,8 @@ export default {
   filterByQuarter: '按季筛选',
   confirm: '确认',
   cancel: '取消',
-  export: 'Excel 导出',
   clearFilter: '清空筛选',
+  reset: '重置',
 
   tips: {
     selectField: '请选择目标字段',
